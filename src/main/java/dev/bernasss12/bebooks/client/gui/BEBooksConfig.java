@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
-import dev.bernasss12.bebooks.client.gui.entries.StringColorEntry;
-import dev.bernasss12.bebooks.util.StringUtils;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -202,13 +200,13 @@ public class BEBooksConfig {
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             String key = Registry.ENCHANTMENT.getId(enchantment).toString();
-            enchantments.add(new StringColorEntry(enchantment.getTranslationKey(), StringUtils.getHexColorString(mappedEnchantmentColors.get(key)), (string) ->
+            enchantments.add(entryBuilder.startColorField(enchantment.getTranslationKey(), mappedEnchantmentColors.get(key)).setDefaultValue(defaultBookStripColor).setSaveConsumer((color) ->
             {
                 EnchantmentData data = storedEnchantmentData.get(key);
-                data.color = StringUtils.getValidIntColor(string);
+                data.color = color;
                 data.translatedName = data.translatedName.equals(Util.createTranslationKey("enchantment", new Identifier(key))) ? I18n.translate(data.translatedName) : data.translatedName;
                 storedEnchantmentData.replace(key, data);
-            }));
+            }).build());
         }
         enchantments.sort(Comparator.comparing(entry -> I18n.translate(entry.getFieldName())));
         bookColoring.addEntry(entryBuilder.startSubCategory("subcategory.bebooks.book_coloring_settings.enchantment_color", enchantments).build());
